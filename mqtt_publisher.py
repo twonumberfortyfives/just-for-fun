@@ -22,6 +22,13 @@ def publish_weather_data():
     start = time.time()
 
     for i in range(5):
+
+        weather_data = {
+            "temperature": random.randint(0, 50),
+            "humidity": random.randint(0, 50),
+            "wind_speed": random.randint(0, 50)
+        }
+
         msg_info = mqttc.publish("weather", json.dumps(weather_data), qos=1)
         msg_info.wait_for_publish()
 

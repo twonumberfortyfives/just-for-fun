@@ -33,3 +33,18 @@ services:
       - 8084:8084
       - 8883:8883
       - 18083:18083
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+
+  celery:
+    build:
+      context: .
+    restart: always
+    depends_on:
+      - redis
+    command: "celery -A celery_app worker --loglevel=info"
