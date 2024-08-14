@@ -48,7 +48,6 @@ mqttc.on_message = on_message
 mqttc.on_subscribe = on_subscribe
 mqttc.on_unsubscribe = on_unsubscribe
 
-mqttc.username_pw_set(username="subscriber", password="251104makS")
 
 try:
     mqttc.connect("emqx1", 1883, 60)

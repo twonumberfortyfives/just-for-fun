@@ -6,8 +6,6 @@ import paho.mqtt.client as mqtt
 
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-mqttc.username_pw_set("publisher", "251104makS")
-
 try:
     mqttc.connect("emqx1", 1883, 60)
 except ConnectionRefusedError:
