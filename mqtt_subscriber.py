@@ -1,5 +1,4 @@
 import json
-from time import sleep
 
 from celery_app import process_weather_data
 
@@ -25,7 +24,6 @@ def on_message(client, userdata, message):
     try:
         json_str = message.payload.decode('utf-8')
         weather_data = json.loads(json_str)
-        # Send the data to the Celery worker
         process_weather_data.delay(
             temperature=weather_data['temperature'],
             humidity=weather_data['humidity'],
@@ -44,22 +42,20 @@ def on_connect(client, userdata, flags, reason_code, properties):
         client.subscribe("weather")  # Subscribe to the 'weather' topic
 
 
-# MQTT client setup
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 mqttc.on_subscribe = on_subscribe
 mqttc.on_unsubscribe = on_unsubscribe
 
-# Set username and password for the broker
 mqttc.username_pw_set(username="subscriber", password="251104makS")
-sleep(10)  # Wait before attempting to connect
 
-# Connect to the MQTT broker
-mqttc.connect("emqx1", 1883, 60)
+try:
+    mqttc.connect("emqx1", 1883, 60)
+except ConnectionRefusedError:
+    print("connecting to MQTT broker...")
 
-# Subscribe to the 'weather' topic again just to be sure
+
 mqttc.subscribe("weather")
 
-# Start the network loop and block forever
 mqttc.loop_forever()
