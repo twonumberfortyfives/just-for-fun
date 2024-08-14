@@ -1,0 +1,35 @@
+services:
+  mqtt_publisher:
+    build:
+      context: .
+    restart: always
+    depends_on:
+      - emqx1
+    command: "python mqtt_publisher.py"
+
+  mqtt_receiver:
+    build:
+      context: .
+    restart: always
+    depends_on:
+      - emqx1
+    command: "python mqtt_subscriber.py"
+
+  emqx1:
+    image: emqx/emqx-enterprise:5.7.2
+    container_name: emqx1
+    environment:
+      - "EMQX_NODE_NAME=emqx@node1.emqx.com"
+      - "EMQX_CLUSTER__DISCOVERY_STRATEGY=static"
+      - "EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.com,emqx@node2.emqx.com]"
+    healthcheck:
+      test: [ "CMD", "/opt/emqx/bin/emqx", "ctl", "status" ]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    ports:
+      - 1883:1883
+      - 8083:8083
+      - 8084:8084
+      - 8883:8883
+      - 18083:18083
