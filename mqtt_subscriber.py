@@ -1,7 +1,5 @@
 import json
-
-from celery_app import process_weather_data
-
+from celery_app import process_weather_data, average_result
 import paho.mqtt.client as mqtt
 
 
@@ -29,6 +27,7 @@ def on_message(client, userdata, message):
             humidity=weather_data['humidity'],
             wind_speed=weather_data['wind_speed']
         )
+        average_result.delay()
     except json.JSONDecodeError:
         print("Received message is not in JSON format")
     except KeyError as e:
@@ -39,7 +38,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code.is_failure:
         print(f"Failed to connect: {reason_code}. loop_forever() will retry connection")
     else:
-        client.subscribe("weather")  # Subscribe to the 'weather' topic
+        client.subscribe("weather")
 
 
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -48,13 +47,9 @@ mqttc.on_message = on_message
 mqttc.on_subscribe = on_subscribe
 mqttc.on_unsubscribe = on_unsubscribe
 
-
 try:
     mqttc.connect("emqx1", 1883, 60)
 except ConnectionRefusedError:
-    print("connecting to MQTT broker...")
-
-
-mqttc.subscribe("weather")
+    print("Connecting to MQTT broker...")
 
 mqttc.loop_forever()
