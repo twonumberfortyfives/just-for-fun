@@ -20,12 +20,12 @@ def on_unsubscribe(client, userdata, mid, reason_code_list, properties):
 
 def on_message(client, userdata, message):
     try:
-        json_str = message.payload.decode('utf-8')
+        json_str = message.payload.decode("utf-8")
         weather_data = json.loads(json_str)
         process_weather_data.delay(
-            temperature=weather_data['temperature'],
-            humidity=weather_data['humidity'],
-            wind_speed=weather_data['wind_speed']
+            temperature=weather_data["temperature"],
+            humidity=weather_data["humidity"],
+            wind_speed=weather_data["wind_speed"],
         )
         average_result.delay()
     except json.JSONDecodeError:

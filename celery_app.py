@@ -2,7 +2,9 @@ import time
 from celery import Celery
 from celery.signals import task_prerun, task_postrun
 
-app = Celery('weather_processor', broker='redis://redis:6379', backend='redis://redis:6379')
+app = Celery(
+    "weather_processor", broker="redis://redis:6379", backend="redis://redis:6379"
+)
 
 task_durations = []
 start_time = None
@@ -28,7 +30,9 @@ def task_end_handler(sender=None, task_id=None, task=None, **kwargs):
 
 @app.task
 def process_weather_data(temperature, humidity, wind_speed):
-    print(f"Received Measurements - Temperature: {temperature}, Humidity: {humidity}, Wind Speed: {wind_speed}")
+    print(
+        f"Received Measurements - Temperature: {temperature}, Humidity: {humidity}, Wind Speed: {wind_speed}"
+    )
 
 
 @app.task
@@ -41,6 +45,8 @@ def average_result():
     total_time = time.time() - start_time
     if total_time > 0:
         throughput = number_of_task / total_time
-        print(f"Executed {number_of_task} tasks. Throughput: {throughput:.2f} tasks per second.")
+        print(
+            f"Executed {number_of_task} tasks. Throughput: {throughput:.2f} tasks per second."
+        )
     else:
         print("Time tracking issue. No throughput available.")

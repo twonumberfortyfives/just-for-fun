@@ -17,7 +17,7 @@ def publish_weather_data():
         weather_data = {
             "temperature": random.randint(0, 50),
             "humidity": random.randint(0, 50),
-            "wind_speed": random.randint(0, 50)
+            "wind_speed": random.randint(0, 50),
         }
 
         try:
